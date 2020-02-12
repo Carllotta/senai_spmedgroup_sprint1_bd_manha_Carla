@@ -1,0 +1,94 @@
+-- DDL do projeto Medgroup
+
+-- Criando base de dados 
+CREATE DATABASE SpMedGroup_Manha;
+
+-- Definindo a base a ser utilizada
+USE SpMedGroup_Manha;
+
+
+-- Criando as tabelas
+CREATE TABLE TiposUsuarios(
+	ID_TipoUsuario INT IDENTITY PRIMARY KEY,
+	TipoUsuario VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE StatusConsulta(
+	ID_StatusConsulta INT IDENTITY PRIMARY KEY,
+	Situacao VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE Generos(
+	ID_Genero INT IDENTITY PRIMARY KEY,
+	Genero VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE Especialidades(
+	ID_Especialidade INT IDENTITY PRIMARY KEY,
+	Especialidade VARCHAR(200) UNIQUE
+);
+
+CREATE TABLE Estados(
+	ID_Estado INT IDENTITY PRIMARY KEY,
+	Estado CHAR(2) UNIQUE
+);
+
+CREATE TABLE Cidades(
+	ID_Cidade INT IDENTITY PRIMARY KEY,
+	Cidade VARCHAR(100),
+);
+
+CREATE TABLE Enderecos(
+	ID_Endereco INT IDENTITY PRIMARY KEY,
+	Logradouro VARCHAR(255) NOT NULL,
+	CEP VARCHAR(15) NOT NULL,
+	FK_Cidade INT FOREIGN KEY REFERENCES Cidades(ID_Cidade) NOT NULL,
+	FK_Estado INT FOREIGN KEY REFERENCES Estados(ID_Estado) NOT NULL
+);
+
+CREATE TABLE Clinicas(
+	ID_Clinica INT IDENTITY PRIMARY KEY,
+	NomeFantasia VARCHAR(200) NOT NULL,
+	CNPJ VARCHAR(18) NOT NULL,
+	RazaoSocial VARCHAR (255) NOT NULL,
+	Telefone VARCHAR(14) NOT NULL,
+	HorarioAbre TIME,
+	HorarioFecha TIME,
+	FK_Endereco INT FOREIGN KEY REFERENCES Enderecos(ID_Endereco) NOT NULL, 
+);
+
+CREATE TABLE Pacientes(
+	ID_Paciente INT IDENTITY PRIMARY KEY,
+	NomePaciente VARCHAR(200) NOT NULL,
+	DataNascimento DATE NOT NULL,
+	RG VARCHAR(9) NOT NULL,
+	CPF VARCHAR(11) NOT NULL,
+	Telefone VARCHAR (14) NOT NULL,
+	FK_Genero INT FOREIGN KEY REFERENCES Generos(ID_Genero) NOT NULL,
+	FK_Endereco INT FOREIGN KEY REFERENCES Enderecos(ID_Endereco)NOT NULL
+);
+
+CREATE TABLE Medicos(
+	ID_Medico INT IDENTITY PRIMARY KEY,
+	NomeMedico VARCHAR(200) NOT NULL,
+	CRM VARCHAR(10) NOT NULL,
+	FK_Genero INT FOREIGN KEY REFERENCES Generos(ID_Genero) NOT NULL,
+	FK_Enderecos INT FOREIGN KEY REFERENCES Enderecos(ID_Endereco) NOT NULL,
+	FK_Especialidade INT FOREIGN KEY REFERENCES Especialidades(ID_Especialidade) NOT NULL
+);
+
+CREATE TABLE Usuarios(
+	ID_Usuario INT IDENTITY PRIMARY KEY,
+	Email VARCHAR(100) UNIQUE NOT NULL,
+	Senha VARCHAR(100) NOT NULL,
+	FK_TipoUsuario INT FOREIGN KEY REFERENCES TiposUsuarios(ID_TipoUsuario)
+);
+
+CREATE TABLE Consultas(
+	ID_Consulta INT IDENTITY PRIMARY KEY,
+	DataConsulta DATETIME2 NOT NULL,
+	Descricao TEXT NOT NULL,
+	FK_StatusConsulta INT FOREIGN KEY REFERENCES StatusConsulta(ID_StatusConsulta),
+	FK_Paciente INT FOREIGN KEY REFERENCES Pacientes(ID_Paciente),
+	FK_Medico INT FOREIGN KEY REFERENCES  Medicos(ID_Medico)
+);
